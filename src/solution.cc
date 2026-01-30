@@ -16,23 +16,16 @@ std::vector<int> RotateRight(const std::vector<int>& vect,
 std::vector<int> RotateChunks(const std::vector<int>& vect,
                               unsigned int chunk_size,
                               unsigned int no_rotations) {
-  std::vector<int> first_half(chunk_size);
-  std::vector<int> second_half(vect.size() - chunk_size);
-  for (unsigned int i = 0; i < chunk_size; ++i) {
-    first_half[i] = vect[i];
+  std::vector<int> new_vector(vect.size());
+  for (unsigned int i = 0; i < vect.size(); i += chunk_size) {
+    std::vector<int> chunk(chunk_size);
+    for (unsigned int j = 0; j < chunk_size; j++) {
+      chunk[j] = vect[(i + j) % vect.size()];
+      RotateRight(chunk, no_rotations % chunk_size);
+    }
+    for (unsigned int j = 0; j < chunk_size; j++) {
+      new_vector[(i + j) % vect.size()] = chunk[j];
+    }
   }
-  for (unsigned int i = chunk_size; i < vect.size(); ++i) {
-    second_half[i - chunk_size] = vect[i];
-  }
-  std::vector<int> rotated_first_half = RotateRight(first_half, no_rotations);
-  std::vector<int> rotated_second_half = RotateRight(second_half, no_rotations);
-  std::vector<int> result(vect.size());
-
-  for (unsigned int i = 0; i < rotated_first_half.size(); ++i) {
-    result[i] = rotated_first_half[i];
-  }
-  for (unsigned int i = 0; i < rotated_second_half.size(); ++i) {
-    result[rotated_first_half.size() + i] = rotated_second_half[i];
-  }
-  return result;
+  return new_vector;
 }
